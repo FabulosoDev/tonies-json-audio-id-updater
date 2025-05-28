@@ -56,6 +56,8 @@ def update_yamls(new_tafs_with_infos):
             taf_header = taf_with_info.get("tafHeader", {})
             yaml_updater.update_yaml_by_taf_header(yaml_file_path, taf_header)
 
+    tonies_json_repo.commit_and_push_changes()
+
 async def main():
     new_tafs_with_infos = await get_new_tafs_with_infos()
     update_yamls(new_tafs_with_infos)

@@ -1,3 +1,4 @@
+gitpython
 httpx
 python-dotenv
 pyyaml
