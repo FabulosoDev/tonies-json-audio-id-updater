@@ -1,0 +1,15 @@
+{
+    "version": "0.1.0",
+    "configurations": [
+      {
+        "name": "Python: Update Audio-Ids",
+        "type": "python",
+        "request": "launch",
+        "program": "${workspaceFolder}/app/main.py",
+        "console": "integratedTerminal",
+        "env": {
+          "PYTHONUNBUFFERED": "1"
+        }
+      }
+    ]
+}
