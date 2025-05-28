@@ -1,0 +1,14 @@
+services:
+  tonies-json-audio-id-updater:
+    build: .
+    container_name: tonies-json-audio-id-updater
+    environment:
+      - LOG_LEVEL=INFO
+      - TEDDYCLOUD_API=
+      - TONIES_JSON_REPO_URL=
+      - TONIES_JSON_REPO_PATH=
+      - TONIES_JSON_UPDATE_BRANCH=
+      - GIT_USERNAME=
+      - GIT_EMAIL=
+      - GIT_TOKEN=
+    restart: unless-stopped
