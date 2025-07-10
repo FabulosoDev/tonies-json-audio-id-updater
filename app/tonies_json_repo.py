@@ -46,6 +46,16 @@ class ToniesJsonRepo:
             except GitCommandError as e:
                 logger.error(f"Failed to force pull repo: {e}")
 
+    def _get_modified_yaml_files(self, repo):
+        """Return a list of YAML files that are modified, staged, or untracked."""
+        unstaged = repo.git.diff('--name-only').splitlines()
+        staged = repo.git.diff('--cached', '--name-only').splitlines()
+        untracked = repo.untracked_files
+
+        all_changed = set(unstaged) | set(staged) | set(untracked)
+        yaml_files = [f for f in all_changed if f.endswith('.yaml')]
+        return yaml_files
+
     def _commit_file(self, repo, file_path):
         """Commit a single YAML file."""
         repo.git.add(file_path)
@@ -61,7 +71,6 @@ class ToniesJsonRepo:
         """Commit changes to YAML files, one commit per file."""
         repo = Repo(self.tonies_json_repo_path)
         repo.git.checkout('-B', self.tonies_json_update_branch)
-        repo.git.add('--all')
 
         if not repo.is_dirty(untracked_files=True):
             logger.info("No changes to commit.")
@@ -78,11 +87,12 @@ class ToniesJsonRepo:
             cw.set_value("user", "name", git_username)
             cw.set_value("user", "email", git_email)
 
-        changed_files = [item.a_path for item in repo.index.diff("HEAD")] + repo.untracked_files
-        yaml_files = [f for f in changed_files if f.endswith(".yaml")]
+        yaml_files = self._get_modified_yaml_files(repo)
 
         committed = False
         for file_path in yaml_files:
+            repo.git.reset()
+            repo.git.add(file_path)
             if self._commit_file(repo, file_path):
                 committed = True
 
