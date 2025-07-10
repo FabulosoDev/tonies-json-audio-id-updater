@@ -46,8 +46,6 @@ class ToniesJsonRepo:
                 if remote_update_branch in [ref.name for ref in repo.refs]:
                     repo.git.checkout('-B', self.tonies_json_update_branch, remote_update_branch)
                     repo.git.reset('--hard', remote_update_branch)
-                else:
-                    repo.git.checkout('-B', self.tonies_json_update_branch)
 
             except GitCommandError as e:
                 logger.error(f"Failed to force pull repo: {e}")
@@ -76,6 +74,7 @@ class ToniesJsonRepo:
     def commit_changes(self):
         """Commit changes to YAML files, one commit per file."""
         repo = Repo(self.tonies_json_repo_path)
+        repo.git.checkout('-B', self.tonies_json_update_branch)
 
         if not repo.is_dirty(untracked_files=True):
             logger.info("No changes to commit.")
