@@ -27,7 +27,7 @@ class YamlUpdater:
                         for i in entry["ids"]
                     )
                     if not already_present:
-                        entry["ids"].append(yaml_id_data)
+                        entry["ids"].insert(0, yaml_id_data)
 
                         # Write YAML back only if a new id was added
                         with open(yaml_file_path, 'w', encoding='utf-8') as yaml_file:
