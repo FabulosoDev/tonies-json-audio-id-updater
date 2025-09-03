@@ -46,6 +46,8 @@ class ToniesJsonRepo:
                 if remote_update_branch in [ref.name for ref in repo.refs]:
                     repo.git.checkout('-B', self.tonies_json_update_branch, remote_update_branch)
                     repo.git.reset('--hard', remote_update_branch)
+                else:
+                    repo.git.checkout('-B', self.tonies_json_update_branch, 'origin/master')
 
             except GitCommandError as e:
                 logger.error(f"Failed to force pull repo: {e}")
@@ -119,10 +121,13 @@ class ToniesJsonRepo:
                 cw.set("url", remote_url)
 
             # Push changes
-            repo.remotes.origin.push(
-                refspec=f"{self.tonies_json_update_branch}:{self.tonies_json_update_branch}",
-                force_with_lease=True
-            )
+            if repo.active_branch.tracking_branch() is None:
+                repo.git.push('--set-upstream', 'origin', self.tonies_json_update_branch)
+            else:
+                repo.remotes.origin.push(
+                    refspec=f"{self.tonies_json_update_branch}:{self.tonies_json_update_branch}",
+                    force_with_lease=True
+                )
             logger.info(f"Pushed all changes to branch {self.tonies_json_update_branch}")
 
             # Restore original URL
